@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  # =db
+  db:
+    image: "sindriainc/mariadb:${MARIADB_TAG}-${MARIADB_VERSION}"
+    container_name: "${APP_NAME}-db"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+    volumes:
+      - "${APP_DATA_PATH}/db/:/var/lib/mysql:delegated"
+    hostname: "${APP_NAME}-db.local"
+    networks:
+      default:
+        ipv4_address: "${SINDRIADOCK_DATABASE_IP_ADDRESS}"
+        aliases:
+          - "${APP_NAME}-db.local"
+  # =app
+  app:
+    image: "sindriainc/nginx-php:${NGINX_PHP_TAG}-${NGINX_PHP_VERSION}-${NGINX_PHP_TAG_ENV}"
+    container_name: "${APP_NAME}-app"
+    volumes:
+      - "${LOCAL_CODE_PATH}:${APP_CODE_PATH}"
+    hostname: "${APP_NAME}-app.local"
+    networks:
+      default:
+        ipv4_address: "${SINDRIADOCK_APP_IP_ADDRESS}"
+        aliases:
+          - "${APP_NAME}-app.local"
+
+# =networks
+networks:
+  default:
+    name: "vpc_${APP_NAME}"
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${SINDRIADOCK_NETWORK_SUBNET}
