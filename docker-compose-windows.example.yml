@@ -11,6 +11,8 @@ services:
     volumes:
       - "${APP_DATA_PATH}/db/:/var/lib/mysql:delegated"
     hostname: "${APP_NAME}-db.local"
+    ports:
+      - "3306:3306"
     networks:
       default:
         ipv4_address: "${SINDRIADOCK_DATABASE_IP_ADDRESS}"
